@@ -3,9 +3,11 @@ name = "comfyui-prompt-history-viewer"
 version = "1.0.0"
 description = "Prompt history node for ComfyUI: appends prompts to a timestamped JSONL log and generates a Ditto-style HTML viewer (newest first, click to copy)."
 license = { text = "MIT" }
-authors = [{ name = "Your Name" }]  # TODO: 改成你的名字
+authors = [{ name = "Pinkert Ren" }]
 readme = "README.md"
-# Optional: ComfyUI-Manager 无 requirements.txt 就不会安装额外依赖
+
+[project.urls]
+Repository = "https://github.com/RePinkert/ComfyUI-Prompt-History-Viewer"
 
 [tool.comfy]
 PublisherId = "pinkertren"
