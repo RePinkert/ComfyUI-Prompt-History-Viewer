@@ -5,7 +5,7 @@
 ## 功能
 
 - 每次出图自动把 prompt 写入 `output/prompt_history_log.jsonl`（含时间戳与序号）
-- 自动生成 / 刷新 `output/prompt_history.html` 查看页，双击即可用浏览器打开
+- 在线查看：浏览器打开 `http://127.0.0.1:8188/prompt_history/viewer`（实时渲染，无需任何额外文件）
 - 内置分页搜索 API（`/prompt_history/entries`，支持 `q` / `limit` / `offset`）
 
 ## 安装
@@ -58,13 +58,13 @@ git clone https://github.com/RePinkert/ComfyUI-Prompt-History-Viewer.git
 
 ## 输出文件
 
-| 文件 | 说明 |
+| 产物 | 说明 |
 |---|---|
-| `output/prompt_history_log.jsonl` | 按时间顺序追加的历史日志（供其它工具读取） |
-| `output/prompt_history.html` | 可视化查看页，出图后自动刷新，浏览器打开即用 |
+| `output/prompt_history_log.jsonl` | **唯一产物**：按时间序追加的历史日志（机器可读、逐行 append） |
 
 HTTP API（默认 `http://127.0.0.1:8188`）：
 ```
+GET /prompt_history/viewer          # Ditto 风格查看页，实时渲染整个日志
 GET /prompt_history/entries?q=<关键词>&limit=<条数>&offset=<偏移>
 ```
 

@@ -9,7 +9,6 @@ from server import PromptServer
 import folder_paths
 
 LOG_FILE_NAME = "prompt_history_log.jsonl"
-VIEW_FILE_NAME = "prompt_history.html"
 
 DEFAULT_PAGE_SIZE = 50
 MAX_PAGE_SIZE = 200
@@ -316,7 +315,22 @@ def get_prompt_history_entries(request):
     offset = max(0, offset)
 
     total, entries = _history_page(request.query.get("q", ""), offset, limit)
-    return web.json_response({"total": total, "offset": offset, "entries": entries})
+    resp = web.json_response({"total": total, "offset": offset, "entries": entries})
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@PromptServer.instance.routes.get("/prompt_history/viewer")
+def get_prompt_history_viewer(request):
+    """Ditto-style HTML viewer, rendered live from the JSONL log.
+
+    The log file is the single artifact; this page is always the
+    current state of the log and must not be cached.
+    """
+    html = _render_html(_read_log(_log_path()))
+    resp = web.Response(text=html, content_type="text/html", charset="utf-8")
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 class PromptHistorySaveNode:
@@ -326,8 +340,8 @@ class PromptHistorySaveNode:
     OUTPUT_NODE = True
     CATEGORY = "utils"
     DESCRIPTION = (
-        "Appends the input prompt to a timestamped history log and regenerates a "
-        "Ditto-style HTML viewer (newest first, click an entry to copy it)."
+        "Appends the input prompt to a single JSONL history log. View the live "
+        "Ditto-style HTML at /prompt_history/viewer (newest first, click to copy)."
     )
 
     @classmethod
@@ -348,7 +362,6 @@ class PromptHistorySaveNode:
         out_dir = _output_dir()
         os.makedirs(out_dir, exist_ok=True)
         log_path = os.path.join(out_dir, LOG_FILE_NAME)
-        view_path = os.path.join(out_dir, VIEW_FILE_NAME)
 
         if text.strip():
             existing = _read_log(log_path)
@@ -360,10 +373,6 @@ class PromptHistorySaveNode:
             }
             with open(log_path, "a", encoding="utf-8") as f:
                 f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-
-            existing.append(entry)
-            with open(view_path, "w", encoding="utf-8") as f:
-                f.write(_render_html(existing))
 
         return {"ui": {"text": [text]}, "result": (text,)}
 
