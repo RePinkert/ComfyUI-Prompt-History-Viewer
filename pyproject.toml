@@ -6,3 +6,7 @@ license = { text = "MIT" }
 authors = [{ name = "Your Name" }]  # TODO: 改成你的名字
 readme = "README.md"
 # Optional: ComfyUI-Manager 无 requirements.txt 就不会安装额外依赖
+
+[tool.comfy]
+PublisherId = "pinkertren"
+DisplayName = "Prompt History Viewer 生成记录 (历史 / Ditto)"
